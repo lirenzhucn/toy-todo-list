@@ -9,7 +9,8 @@ export const useTodoStore = defineStore('todo', () => {
   const error = ref<string | null>(null)
 
   const apiClient = new TodoApiClient({
-    BASE: 'http://localhost:3000',
+    // this trick uses the dynamic vite api url to point the client object to the correct backend url
+    BASE: import.meta.env.VITE_API_BASE_URL || '',
   })
 
   // Getters
