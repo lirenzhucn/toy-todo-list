@@ -2,7 +2,7 @@
   <el-table :data="todos" style="width: 100%" v-loading="loading">
     <el-table-column width="50">
       <template #default="{ row }">
-        <el-checkbox 
+        <el-checkbox
           v-if="!row.isComplete"
           :model-value="false"
           @change="() => handleToggleComplete(row)"
@@ -31,14 +31,14 @@
     </el-table-column>
     <el-table-column label="Actions" width="150" fixed="right">
       <template #default="{ row }">
-        <el-button 
-          size="small" 
+        <el-button
+          size="small"
           @click="handleEdit(row)"
           :icon="Edit"
         />
-        <el-button 
-          size="small" 
-          type="danger" 
+        <el-button
+          size="small"
+          type="danger"
           @click="handleDelete(row)"
           :icon="Delete"
         />
@@ -48,10 +48,10 @@
 
   <!-- Edit Dialog -->
   <el-dialog v-model="showEditDialog" title="Edit Todo" width="500px">
-    <TodoForm 
-      :todo="editingTodo" 
-      @submit="handleUpdateTodo" 
-      @cancel="showEditDialog = false" 
+    <TodoForm
+      :todo="editingTodo"
+      @submit="handleUpdateTodo"
+      @cancel="showEditDialog = false"
     />
   </el-dialog>
 </template>
@@ -107,7 +107,7 @@ const handleDelete = async (todo: TodoItem) => {
         type: 'warning',
       }
     )
-    
+
     if (todo.id) {
       await todoStore.deleteTodo(todo.id)
       ElMessage.success('Todo deleted successfully')

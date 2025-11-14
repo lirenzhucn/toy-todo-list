@@ -1,8 +1,8 @@
 <template>
-  <el-form 
-    ref="formRef" 
-    :model="formData" 
-    :rules="rules" 
+  <el-form
+    ref="formRef"
+    :model="formData"
+    :rules="rules"
     label-width="120px"
   >
     <el-form-item label="Title" prop="title">
@@ -10,24 +10,24 @@
     </el-form-item>
 
     <el-form-item label="Description" prop="description">
-      <el-input 
-        v-model="formData.description" 
-        type="textarea" 
+      <el-input
+        v-model="formData.description"
+        type="textarea"
         placeholder="Enter description (optional)"
         :rows="3"
       />
     </el-form-item>
 
     <el-form-item label="Status" prop="isComplete">
-      <el-switch 
-        v-model="formData.isComplete" 
+      <el-switch
+        v-model="formData.isComplete"
         active-text="Complete"
         inactive-text="Incomplete"
       />
     </el-form-item>
 
     <el-form-item label="Scheduled Date" prop="scheduledDateTime">
-      <el-date-picker 
+      <el-date-picker
         v-model="formData.scheduledDateTime"
         type="datetime"
         placeholder="Select scheduled date/time"
@@ -38,7 +38,7 @@
     </el-form-item>
 
     <el-form-item label="Due Date" prop="dueDateTime">
-      <el-date-picker 
+      <el-date-picker
         v-model="formData.dueDateTime"
         type="datetime"
         placeholder="Select due date/time"
@@ -108,16 +108,16 @@ watch(() => props.todo, (newTodo) => {
 
 const handleSubmit = async () => {
   if (!formRef.value) return
-  
+
   try {
     await formRef.value.validate()
     loading.value = true
-    
+
     const todoData: TodoItem = {
       ...formData,
       id: props.todo?.id,
     }
-    
+
     emit('submit', todoData)
   } catch (error) {
     console.error('Form validation failed:', error)

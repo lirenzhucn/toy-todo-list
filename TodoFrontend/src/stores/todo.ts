@@ -22,7 +22,7 @@ export const useTodoStore = defineStore('todo', () => {
   })
   const overdueTodos = computed(() => {
     const now = new Date()
-    return todos.value.filter(todo => 
+    return todos.value.filter(todo =>
       todo.dueDateTime && new Date(todo.dueDateTime) < now && !todo.isComplete
     )
   })
@@ -30,15 +30,15 @@ export const useTodoStore = defineStore('todo', () => {
     const today = dayjs().startOf('day')
     const todayItems = todos.value.filter(todo => {
       if (todo.isComplete) return false
-      
+
       const scheduledDate = todo.scheduledDateTime ? dayjs(todo.scheduledDateTime) : null
       const dueDate = todo.dueDateTime ? dayjs(todo.dueDateTime) : null
-      
+
       // Include if scheduled today or before today
       const scheduledTodayOrBefore = scheduledDate && scheduledDate <= today
-      // Include if due today or before today  
+      // Include if due today or before today
       const dueTodayOrBefore = dueDate && dueDate <= today
-      
+
       return scheduledTodayOrBefore || dueTodayOrBefore
     })
     return sortTodosByDate(todayItems)
@@ -50,7 +50,7 @@ export const useTodoStore = defineStore('todo', () => {
       // First sort by scheduled date
       const aScheduled = a.scheduledDateTime ? dayjs(a.scheduledDateTime) : null
       const bScheduled = b.scheduledDateTime ? dayjs(b.scheduledDateTime) : null
-      
+
       if (aScheduled && bScheduled) {
         const scheduledDiff = aScheduled.valueOf() - bScheduled.valueOf()
         if (scheduledDiff !== 0) return scheduledDiff
@@ -59,11 +59,11 @@ export const useTodoStore = defineStore('todo', () => {
       } else if (!aScheduled && bScheduled) {
         return 1 // Items with scheduled dates come first
       }
-      
+
       // Then sort by due date
       const aDue = a.dueDateTime ? dayjs(a.dueDateTime) : null
       const bDue = b.dueDateTime ? dayjs(b.dueDateTime) : null
-      
+
       if (aDue && bDue) {
         return aDue.valueOf() - bDue.valueOf()
       } else if (aDue && !bDue) {
@@ -71,7 +71,7 @@ export const useTodoStore = defineStore('todo', () => {
       } else if (!aDue && bDue) {
         return 1 // Items with due dates come first
       }
-      
+
       return 0
     })
   }
