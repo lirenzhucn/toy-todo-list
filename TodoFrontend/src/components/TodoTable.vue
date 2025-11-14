@@ -1,5 +1,15 @@
 <template>
   <el-table :data="todos" style="width: 100%" v-loading="loading">
+    <el-table-column width="50">
+      <template #default="{ row }">
+        <el-checkbox 
+          v-if="!row.isComplete"
+          :model-value="false"
+          @change="() => handleToggleComplete(row)"
+        />
+        <el-icon v-else><Check /></el-icon>
+      </template>
+    </el-table-column>
     <el-table-column prop="title" label="Title" min-width="150" />
     <el-table-column prop="description" label="Description" min-width="200" />
     <el-table-column label="Status" width="100">
@@ -49,7 +59,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { Edit, Delete } from '@element-plus/icons-vue'
+import { Edit, Delete, Check } from '@element-plus/icons-vue'
 import dayjs from 'dayjs'
 import type { TodoItem } from '@/types/todo'
 import { useTodoStore } from '@/stores/todo'
@@ -105,6 +115,18 @@ const handleDelete = async (todo: TodoItem) => {
   } catch (error) {
     // User cancelled or error occurred
     console.log('Delete cancelled or failed:', error)
+  }
+}
+
+const handleToggleComplete = async (todo: TodoItem) => {
+  if (todo.id) {
+    try {
+      await todoStore.updateTodo(todo.id, { ...todo, isComplete: true })
+      ElMessage.success('Todo marked as complete')
+    } catch (error) {
+      ElMessage.error('Failed to mark todo as complete')
+      console.error('Error marking todo complete:', error)
+    }
   }
 }
 </script>

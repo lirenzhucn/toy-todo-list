@@ -23,11 +23,14 @@
 
           <div v-else>
             <el-tabs v-model="activeTab">
-              <el-tab-pane label="All" name="all">
-                <TodoTable :todos="todoStore.todos" />
-              </el-tab-pane>
               <el-tab-pane label="Incomplete" name="incomplete">
                 <TodoTable :todos="todoStore.incompleteTodos" />
+              </el-tab-pane>
+              <el-tab-pane label="Today" name="today">
+                <TodoTable :todos="todoStore.todayTodos" />
+              </el-tab-pane>
+              <el-tab-pane label="All" name="all">
+                <TodoTable :todos="todoStore.todos" />
               </el-tab-pane>
               <el-tab-pane label="Completed" name="completed">
                 <TodoTable :todos="todoStore.completedTodos" />
@@ -56,7 +59,7 @@ import TodoForm from '@/components/TodoForm.vue'
 import { Plus } from '@element-plus/icons-vue'
 
 const todoStore = useTodoStore()
-const activeTab = ref('all')
+const activeTab = ref('incomplete')
 const showAddDialog = ref(false)
 
 onMounted(() => {
