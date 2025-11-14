@@ -193,3 +193,6 @@ Thumbs.db
 ## Temporary files
 *.tmp
 *.temp
+
+## some typescript stuff
+*.tsbuildinfo

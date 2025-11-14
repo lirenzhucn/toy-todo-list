@@ -37,6 +37,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseDefaultFiles();   // looks for index.html
+app.UseStaticFiles();    // serves everything under wwwroot
+app.MapFallbackToFile("index.html");
+
 // Health check endpoint for Docker
 app.MapGet("/health", () => Results.Ok("Healthy"));
 
