@@ -23,7 +23,7 @@
 
           <div v-else>
             <el-tabs v-model="activeTab">
-              <el-tab-pane label="Incomplete" name="incomplete">
+              <el-tab-pane label="Todo" name="todo">
                 <TodoTable :todos="todoStore.incompleteTodos" />
               </el-tab-pane>
               <el-tab-pane label="Today" name="today">
@@ -59,7 +59,7 @@ import TodoForm from '@/components/TodoForm.vue'
 import { Plus } from '@element-plus/icons-vue'
 
 const todoStore = useTodoStore()
-const activeTab = ref('incomplete')
+const activeTab = ref('todo')
 const showAddDialog = ref(false)
 
 onMounted(() => {

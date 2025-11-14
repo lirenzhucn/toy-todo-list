@@ -15,7 +15,7 @@
     <el-table-column label="Status" width="100">
       <template #default="{ row }">
         <el-tag :type="row.isComplete ? 'success' : 'warning'">
-          {{ row.isComplete ? 'Complete' : 'Incomplete' }}
+          {{ row.isComplete ? 'Complete' : 'Todo' }}
         </el-tag>
       </template>
     </el-table-column>

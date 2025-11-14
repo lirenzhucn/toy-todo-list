@@ -22,7 +22,7 @@
       <el-switch
         v-model="formData.isComplete"
         active-text="Complete"
-        inactive-text="Incomplete"
+        inactive-text="Todo"
       />
     </el-form-item>
 
