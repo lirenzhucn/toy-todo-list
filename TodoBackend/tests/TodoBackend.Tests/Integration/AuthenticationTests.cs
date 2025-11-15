@@ -195,7 +195,7 @@ namespace TodoBackend.Tests.Tests.Integration
 
             // Act - First user tries to get all todo items
             var firstUserTodos = await _client.GetFromJsonAsync<List<TodoItem>>("/api/todoitems");
-            
+
             // Act - Second user tries to get all todo items
             var secondUserTodos = await secondUserClient.GetFromJsonAsync<List<TodoItem>>("/api/todoitems");
 

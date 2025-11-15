@@ -8,7 +8,7 @@ namespace TodoBackend.Core.Entities
         public bool IsComplete { get; set; } = false;
         public DateTime? ScheduledDateTime { get; set; }
         public DateTime? DueDateTime { get; set; }
-        
+
         // User ownership
         public string UserId { get; set; } = null!;
     }

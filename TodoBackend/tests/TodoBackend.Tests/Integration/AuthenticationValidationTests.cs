@@ -183,9 +183,9 @@ namespace TodoBackend.Tests.Tests.Integration
             };
 
             // Act
-            var tasks = registerRequests.Select(request => 
+            var tasks = registerRequests.Select(request =>
                 _client.PostAsJsonAsync("/api/auth/register", request));
-            
+
             var responses = await Task.WhenAll(tasks);
 
             // Assert
@@ -200,7 +200,7 @@ namespace TodoBackend.Tests.Tests.Integration
         {
             // This test would require token expiration to be configured
             // For now, we'll test that different tokens work for different users
-            
+
             // Register and login first user
             var firstUserRequest = new RegisterRequest
             {
@@ -230,11 +230,11 @@ namespace TodoBackend.Tests.Tests.Integration
 
             // Both tokens should work for their respective users
             var firstUserClient = _fixture.CreateClient();
-            firstUserClient.DefaultRequestHeaders.Authorization = 
+            firstUserClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", firstToken);
 
             var secondUserClient = _fixture.CreateClient();
-            secondUserClient.DefaultRequestHeaders.Authorization = 
+            secondUserClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", secondToken);
 
             var firstUserItemsResponse = await firstUserClient.GetAsync("/api/todoitems");

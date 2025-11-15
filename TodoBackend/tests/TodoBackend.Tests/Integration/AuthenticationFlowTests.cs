@@ -24,7 +24,7 @@ namespace TodoBackend.Tests.Tests.Integration
 
             var registerResponse = await _client.PostAsJsonAsync("/api/auth/register", registerRequest);
             registerResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            
+
             var authResponse = await registerResponse.Content.ReadFromJsonAsync<AuthResponse>();
             authResponse.Should().NotBeNull();
             authResponse!.Token.Should().NotBeNullOrEmpty();
@@ -35,7 +35,7 @@ namespace TodoBackend.Tests.Tests.Integration
 
             // 2. Create authenticated client with the token
             var authenticatedClient = _fixture.CreateClient();
-            authenticatedClient.DefaultRequestHeaders.Authorization = 
+            authenticatedClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
 
             // 3. Get todo items (should be empty for new user)
@@ -55,7 +55,7 @@ namespace TodoBackend.Tests.Tests.Integration
 
             var createResponse = await authenticatedClient.PostAsJsonAsync("/api/todoitems", newTodoItem);
             createResponse.StatusCode.Should().Be(HttpStatusCode.Created);
-            
+
             var createdItem = await createResponse.Content.ReadFromJsonAsync<TodoItem>();
             createdItem.Should().NotBeNull();
             createdItem!.Id.Should().BeGreaterThan(0);
@@ -66,7 +66,7 @@ namespace TodoBackend.Tests.Tests.Integration
             // 5. Get specific todo item
             var getByIdResponse = await authenticatedClient.GetAsync($"/api/todoitems/{todoId}");
             getByIdResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            
+
             var retrievedItem = await getByIdResponse.Content.ReadFromJsonAsync<TodoItem>();
             retrievedItem.Should().NotBeNull();
             retrievedItem!.Id.Should().Be(todoId);
@@ -87,7 +87,7 @@ namespace TodoBackend.Tests.Tests.Integration
             // 7. Get all todo items after update
             var getAllAfterUpdateResponse = await authenticatedClient.GetAsync("/api/todoitems");
             getAllAfterUpdateResponse.StatusCode.Should().Be(HttpStatusCode.OK);
-            
+
             var allItemsAfterUpdate = await getAllAfterUpdateResponse.Content.ReadFromJsonAsync<List<TodoItem>>();
             allItemsAfterUpdate.Should().NotBeNull();
             allItemsAfterUpdate.Should().HaveCount(1);
@@ -136,7 +136,7 @@ namespace TodoBackend.Tests.Tests.Integration
         {
             // Test all endpoints with invalid token
             var invalidTokenClient = _fixture.CreateClient();
-            invalidTokenClient.DefaultRequestHeaders.Authorization = 
+            invalidTokenClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", "invalid-token");
 
             // GET /api/todoitems
@@ -177,7 +177,7 @@ namespace TodoBackend.Tests.Tests.Integration
             var firstUserToken = firstUserAuthResponse!.Token;
 
             var firstUserClient = _fixture.CreateClient();
-            firstUserClient.DefaultRequestHeaders.Authorization = 
+            firstUserClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", firstUserToken);
 
             // Create todo item for first user
@@ -206,7 +206,7 @@ namespace TodoBackend.Tests.Tests.Integration
             var secondUserToken = secondUserAuthResponse!.Token;
 
             var secondUserClient = _fixture.CreateClient();
-            secondUserClient.DefaultRequestHeaders.Authorization = 
+            secondUserClient.DefaultRequestHeaders.Authorization =
                 new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", secondUserToken);
 
             // Second user should not be able to access first user's item

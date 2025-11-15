@@ -35,10 +35,10 @@ namespace TodoBackend.Tests.TestHelpers
             _dbContext = scope.ServiceProvider.GetRequiredService<TodoContext>();
             _userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             _testUser = fixture.TestUser ?? throw new InvalidOperationException("Test user not found");
-            
+
             // Get authentication token for test user
             GetAuthTokenAsync().GetAwaiter().GetResult();
-            
+
             // Seed initial data
             SeedDatabase().GetAwaiter().GetResult();
         }
