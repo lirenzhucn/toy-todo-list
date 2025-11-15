@@ -82,8 +82,8 @@ app.MapPut("/api/todoitems/{id}", async (int id, TodoItem inputTodoItem, ITodoIt
 {
     try
     {
-        await todoItemService.UpdateTodoItemAsync(id, inputTodoItem);
-        return Results.NoContent();
+        var updatedItem = await todoItemService.UpdateTodoItemAsync(id, inputTodoItem);
+        return updatedItem is not null ? Results.Ok(updatedItem) : Results.NotFound();
     }
     catch (KeyNotFoundException)
     {

@@ -35,7 +35,7 @@ namespace TodoBackend.Core.Services
             return await _todoItemRepository.AddAsync(todoItem);
         }
 
-        public async Task UpdateTodoItemAsync(int id, TodoItem todoItem)
+        public async Task<TodoItem> UpdateTodoItemAsync(int id, TodoItem todoItem)
         {
             var existingItem = await _todoItemRepository.GetByIdAsync(id);
             if (existingItem == null)
@@ -50,6 +50,7 @@ namespace TodoBackend.Core.Services
             existingItem.DueDateTime = todoItem.DueDateTime;
 
             await _todoItemRepository.UpdateAsync(existingItem);
+            return existingItem;
         }
 
         public async Task<TodoItem?> DeleteTodoItemAsync(int id)
