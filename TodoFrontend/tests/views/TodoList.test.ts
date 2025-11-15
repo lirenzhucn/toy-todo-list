@@ -8,18 +8,8 @@ import TodoForm from '@/components/TodoForm.vue'
 import { useTodoStore } from '@/stores/todo'
 import { mockTodoItems } from '../utils/mocks'
 
-// Mock the todo store
-const mockStore = {
-  todos: mockTodoItems,
-  loading: false,
-  error: null,
-  completedTodos: mockTodoItems.filter(t => t.isComplete),
-  incompleteTodos: mockTodoItems.filter(t => !t.isComplete),
-  overdueTodos: mockTodoItems.filter(t => !t.isComplete && t.dueDateTime && new Date(t.dueDateTime) < new Date()),
-  todayTodos: mockTodoItems.filter(t => !t.isComplete),
-  fetchTodos: vi.fn().mockResolvedValue(undefined),
-  addTodo: vi.fn().mockResolvedValue(undefined)
-}
+// Create a fresh mock store for each test
+let mockStore: any
 
 vi.mock('@/stores/todo', () => ({
   useTodoStore: vi.fn(() => mockStore)
@@ -53,6 +43,18 @@ describe('TodoList', () => {
   }
 
   beforeEach(() => {
+    // Create fresh mock store for each test
+    mockStore = {
+      todos: mockTodoItems,
+      loading: false,
+      error: '',
+      completedTodos: mockTodoItems.filter(t => t.isComplete),
+      incompleteTodos: mockTodoItems.filter(t => !t.isComplete),
+      overdueTodos: mockTodoItems.filter(t => !t.isComplete && t.dueDateTime && new Date(t.dueDateTime) < new Date()),
+      todayTodos: mockTodoItems.filter(t => !t.isComplete),
+      fetchTodos: vi.fn().mockResolvedValue(undefined),
+      addTodo: vi.fn().mockResolvedValue(undefined)
+    }
     vi.clearAllMocks()
     wrapper = mountComponent()
   })
@@ -73,10 +75,10 @@ describe('TodoList', () => {
     it('should render all tabs', () => {
       const tabs = wrapper.findComponent(ElTabs)
       expect(tabs).toBeTruthy()
-      
+
       const tabPanes = wrapper.findAllComponents(ElTabPane)
       expect(tabPanes).toHaveLength(5)
-      
+
       const tabLabels = ['Todo', 'Today', 'All', 'Completed', 'Overdue']
       tabLabels.forEach(label => {
         expect(wrapper.text()).toContain(label)
@@ -99,9 +101,13 @@ describe('TodoList', () => {
       mockStore.loading = true
       const loadingWrapper = mountComponent()
       await loadingWrapper.vm.$nextTick()
+
+      // Check for loading element in DOM (inside the card)
+      expect(loadingWrapper.find('.loading').exists()).toBe(true)
+      expect(loadingWrapper.findComponent(ElLoading).exists()).toBe(true)
       
-      // Check for loading indicators (may be implemented differently)
-      expect(loadingWrapper.vm.todoStore.loading).toBe(true)
+      // Tabs should not be visible during loading (only the card header should be visible)
+      expect(loadingWrapper.find('.todo-list .el-tabs').exists()).toBe(false)
     })
 
     it('should show error message when store has error', async () => {
@@ -109,9 +115,14 @@ describe('TodoList', () => {
       mockStore.error = 'Failed to load todos'
       const errorWrapper = mountComponent()
       await errorWrapper.vm.$nextTick()
+
+      // Check for error element in DOM (should be the only visible content besides header)
+      expect(errorWrapper.find('.error').exists()).toBe(true)
+      expect(errorWrapper.findComponent(ElAlert).exists()).toBe(true)
+      expect(errorWrapper.text()).toContain('Failed to load todos')
       
-      // Check for error state
-      expect(errorWrapper.vm.todoStore.error).toBe('Failed to load todos')
+      // Main content should not be visible during error
+      expect(errorWrapper.find('.todo-list .el-tabs').exists()).toBe(false)
     })
 
     it('should show todo content when not loading and no error', () => {
@@ -144,7 +155,7 @@ describe('TodoList', () => {
       const addButton = wrapper.find('button')
       await addButton.trigger('click')
       await wrapper.vm.$nextTick()
-      
+
       expect(wrapper.vm.showAddDialog).toBe(true)
       // The dialog should be rendered when showAddDialog is true
       expect(wrapper.findComponent(ElDialog).exists()).toBe(true)
@@ -155,11 +166,11 @@ describe('TodoList', () => {
       const addButton = wrapper.find('button')
       await addButton.trigger('click')
       await wrapper.vm.$nextTick()
-      
+
       // Cancel dialog by setting the flag
       wrapper.vm.showAddDialog = false
       await wrapper.vm.$nextTick()
-      
+
       expect(wrapper.vm.showAddDialog).toBe(false)
     })
 
@@ -171,9 +182,9 @@ describe('TodoList', () => {
         scheduledDateTime: null,
         dueDateTime: null
       }
-      
+
       await wrapper.vm.handleAddTodo(newTodo)
-      
+
       expect(mockStore.addTodo).toHaveBeenCalledWith(newTodo)
       expect(wrapper.vm.showAddDialog).toBe(false)
     })
@@ -188,7 +199,7 @@ describe('TodoList', () => {
       // Change the active tab
       wrapper.vm.activeTab = 'today'
       await wrapper.vm.$nextTick()
-      
+
       expect(wrapper.vm.activeTab).toBe('today')
     })
   })
@@ -197,7 +208,7 @@ describe('TodoList', () => {
     it('should use proper grid layout', () => {
       const row = wrapper.findComponent(ElRow)
       const col = wrapper.findComponent(ElCol)
-      
+
       expect(row.exists()).toBe(true)
       expect(col.exists()).toBe(true)
       expect(col.props('span')).toBe(24)
@@ -220,10 +231,10 @@ describe('TodoList', () => {
       mockStore.completedTodos = []
       mockStore.overdueTodos = []
       mockStore.todayTodos = []
-      
+
       const emptyWrapper = mountComponent()
       await emptyWrapper.vm.$nextTick()
-      
+
       const todoTables = emptyWrapper.findAllComponents(TodoTable)
       todoTables.forEach(table => {
         expect(table.props('todos')).toEqual([])
