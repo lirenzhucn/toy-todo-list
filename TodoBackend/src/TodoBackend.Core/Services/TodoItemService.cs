@@ -13,31 +13,34 @@ namespace TodoBackend.Core.Services
         }
 
         public async Task<IEnumerable<TodoItem>> GetAllTodoItemsAsync(
+            string userId,
             DateTime? scheduledDateTimeFrom = null,
             DateTime? scheduledDateTimeTo = null,
             DateTime? dueDateTimeFrom = null,
             DateTime? dueDateTimeTo = null)
         {
             return await _todoItemRepository.GetAllAsync(
+                userId,
                 scheduledDateTimeFrom,
                 scheduledDateTimeTo,
                 dueDateTimeFrom,
                 dueDateTimeTo);
         }
 
-        public async Task<TodoItem?> GetTodoItemByIdAsync(int id)
+        public async Task<TodoItem?> GetTodoItemByIdAsync(int id, string userId)
         {
-            return await _todoItemRepository.GetByIdAsync(id);
+            return await _todoItemRepository.GetByIdAsync(id, userId);
         }
 
-        public async Task<TodoItem> CreateTodoItemAsync(TodoItem todoItem)
+        public async Task<TodoItem> CreateTodoItemAsync(TodoItem todoItem, string userId)
         {
+            todoItem.UserId = userId;
             return await _todoItemRepository.AddAsync(todoItem);
         }
 
-        public async Task<TodoItem> UpdateTodoItemAsync(int id, TodoItem todoItem)
+        public async Task<TodoItem> UpdateTodoItemAsync(int id, TodoItem todoItem, string userId)
         {
-            var existingItem = await _todoItemRepository.GetByIdAsync(id);
+            var existingItem = await _todoItemRepository.GetByIdAsync(id, userId);
             if (existingItem == null)
             {
                 throw new KeyNotFoundException($"TodoItem with id {id} not found.");
@@ -53,9 +56,9 @@ namespace TodoBackend.Core.Services
             return existingItem;
         }
 
-        public async Task<TodoItem?> DeleteTodoItemAsync(int id)
+        public async Task<TodoItem?> DeleteTodoItemAsync(int id, string userId)
         {
-            var todoItem = await _todoItemRepository.GetByIdAsync(id);
+            var todoItem = await _todoItemRepository.GetByIdAsync(id, userId);
             if (todoItem == null)
             {
                 return null;
