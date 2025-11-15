@@ -22,11 +22,14 @@ builder.Services.AddScoped<ITodoItemService, TodoItemService>();
 
 var app = builder.Build();
 
-// Apply database migrations on startup
-using (var scope = app.Services.CreateScope())
+// Apply database migrations on startup (skip in test environment)
+if (!app.Environment.IsEnvironment("Testing"))
 {
-    var dbContext = scope.ServiceProvider.GetRequiredService<TodoContext>();
-    dbContext.Database.Migrate();
+    using (var scope = app.Services.CreateScope())
+    {
+        var dbContext = scope.ServiceProvider.GetRequiredService<TodoContext>();
+        dbContext.Database.Migrate();
+    }
 }
 
 // Configure the HTTP request pipeline.

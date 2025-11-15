@@ -28,7 +28,16 @@ namespace TodoBackend.Tests.Tests.Integration
             var response = await _client.PutAsJsonAsync($"/api/todoitems/{1}", updatedTodoItem);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Verify the response contains the updated item
+            var updatedItem = await response.Content.ReadFromJsonAsync<TodoItem>();
+            updatedItem.Should().NotBeNull();
+            updatedItem!.Title.Should().Be(updatedTodoItem.Title);
+            updatedItem.Description.Should().Be(updatedTodoItem.Description);
+            updatedItem.IsComplete.Should().Be(updatedTodoItem.IsComplete);
+            updatedItem.ScheduledDateTime.Should().Be(updatedTodoItem.ScheduledDateTime);
+            updatedItem.DueDateTime.Should().Be(updatedTodoItem.DueDateTime);
 
             // Verify the item was actually updated
             var getResponse = await _client.GetAsync($"/api/todoitems/{1}");
@@ -84,7 +93,16 @@ namespace TodoBackend.Tests.Tests.Integration
             var response = await _client.PutAsJsonAsync($"/api/todoitems/{2}", updatedTodoItem);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Verify the response contains the updated item
+            var updatedItem = await response.Content.ReadFromJsonAsync<TodoItem>();
+            updatedItem.Should().NotBeNull();
+            updatedItem!.Title.Should().Be("Only Title Updated");
+            updatedItem.Description.Should().Be(originalItem.Description);
+            updatedItem.IsComplete.Should().Be(originalItem.IsComplete);
+            updatedItem.ScheduledDateTime.Should().Be(originalItem.ScheduledDateTime);
+            updatedItem.DueDateTime.Should().Be(originalItem.DueDateTime);
 
             // Verify only the title was updated
             var getResponse = await _client.GetAsync($"/api/todoitems/{2}");
@@ -114,7 +132,16 @@ namespace TodoBackend.Tests.Tests.Integration
             var response = await _client.PutAsJsonAsync($"/api/todoitems/{1}", updatedTodoItem);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Verify the response contains the updated item with null dates
+            var updatedItem = await response.Content.ReadFromJsonAsync<TodoItem>();
+            updatedItem.Should().NotBeNull();
+            updatedItem!.Title.Should().Be(updatedTodoItem.Title);
+            updatedItem.Description.Should().Be(updatedTodoItem.Description);
+            updatedItem.IsComplete.Should().Be(updatedTodoItem.IsComplete);
+            updatedItem.ScheduledDateTime.Should().BeNull();
+            updatedItem.DueDateTime.Should().BeNull();
 
             // Verify the fields were set to null
             var getResponse = await _client.GetAsync($"/api/todoitems/{1}");
@@ -145,7 +172,16 @@ namespace TodoBackend.Tests.Tests.Integration
             var response = await _client.PutAsJsonAsync($"/api/todoitems/{1}", updatedTodoItem);
 
             // Assert
-            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+            response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+            // Verify the response contains the updated item with completed status
+            var updatedItem = await response.Content.ReadFromJsonAsync<TodoItem>();
+            updatedItem.Should().NotBeNull();
+            updatedItem!.Title.Should().Be(originalItem.Title);
+            updatedItem.Description.Should().Be(originalItem.Description);
+            updatedItem.IsComplete.Should().BeTrue();
+            updatedItem.ScheduledDateTime.Should().Be(originalItem.ScheduledDateTime);
+            updatedItem.DueDateTime.Should().Be(originalItem.DueDateTime);
 
             // Verify the status was updated
             var getResponse = await _client.GetAsync($"/api/todoitems/{1}");
