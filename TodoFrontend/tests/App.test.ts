@@ -1,7 +1,18 @@
-import { describe, it, expect, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { mount, VueWrapper } from '@vue/test-utils'
+import { setActivePinia, createPinia } from 'pinia'
 import { ElContainer, ElHeader, ElMain } from 'element-plus'
 import App from '@/App.vue'
+
+// Mock the auth store
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: () => ({
+    isAuthenticated: false,
+    userName: '',
+    logout: vi.fn(),
+    initializeAuth: vi.fn()
+  })
+}))
 
 describe('App', () => {
   let wrapper: VueWrapper<any>
@@ -9,6 +20,7 @@ describe('App', () => {
   const mountComponent = () => {
     return mount(App, {
       global: {
+        plugins: [createPinia()],
         components: {
           ElContainer,
           ElHeader,
@@ -18,12 +30,26 @@ describe('App', () => {
           RouterView: {
             template: '<div class="router-view-stub">Router View Content</div>'
           }
+        },
+        mocks: {
+          $router: {
+            push: vi.fn()
+          }
         }
       }
     })
   }
 
   beforeEach(() => {
+    // Create a fresh Pinia instance for each test
+    setActivePinia(createPinia())
+
+    // Mock localStorage
+    localStorage.clear()
+
+    // Clear any previous mock calls
+    vi.clearAllMocks()
+
     wrapper = mountComponent()
   })
 
@@ -56,7 +82,7 @@ describe('App', () => {
       const container = wrapper.findComponent(ElContainer)
       const header = container.findComponent(ElHeader)
       const main = container.findComponent(ElMain)
-      
+
       expect(header.exists()).toBe(true)
       expect(main.exists()).toBe(true)
     })
@@ -64,14 +90,14 @@ describe('App', () => {
     it('should have header as first child of container', () => {
       const container = wrapper.findComponent(ElContainer)
       const firstChild = container.element.firstElementChild
-      
+
       expect(firstChild?.classList.contains('el-header')).toBe(true)
     })
 
     it('should have main as second child of container', () => {
       const container = wrapper.findComponent(ElContainer)
       const children = container.element.children
-      
+
       expect(children[1].classList.contains('el-main')).toBe(true)
     })
   })
@@ -79,7 +105,7 @@ describe('App', () => {
   describe('Styling', () => {
     it('should have correct app styles', () => {
       const app = wrapper.find('#app')
-      
+
       expect(app.exists()).toBe(true)
       // Check if CSS is applied (you may need to adjust based on your actual styles)
       expect(app.attributes('style')).toBeFalsy() // No inline styles by default
@@ -87,14 +113,14 @@ describe('App', () => {
 
     it('should have correct header styles', () => {
       const header = wrapper.findComponent(ElHeader)
-      
+
       expect(header.exists()).toBe(true)
       // Element Plus handles the styling, so we just check it exists
     })
 
     it('should have correct typography styles', () => {
       const h1 = wrapper.find('h1')
-      
+
       expect(h1.exists()).toBe(true)
       expect(h1.text()).toBe('Todo List Management')
     })
@@ -103,7 +129,7 @@ describe('App', () => {
   describe('Content', () => {
     it('should display the correct app title', () => {
       const title = wrapper.find('h1')
-      
+
       expect(title.text()).toBe('Todo List Management')
       expect(title.element.tagName).toBe('H1')
     })
@@ -111,7 +137,7 @@ describe('App', () => {
     it('should have centered header text', () => {
       const header = wrapper.findComponent(ElHeader)
       const h1 = header.find('h1')
-      
+
       expect(h1.exists()).toBe(true)
       // Element Plus handles the centering
     })
@@ -124,7 +150,7 @@ describe('App', () => {
 
     it('should pass through router view content', () => {
       const routerView = wrapper.find('.router-view-stub')
-      
+
       expect(routerView.text()).toBe('Router View Content')
     })
   })
@@ -140,7 +166,7 @@ describe('App', () => {
   describe('Accessibility', () => {
     it('should have proper heading structure', () => {
       const h1 = wrapper.find('h1')
-      
+
       expect(h1.exists()).toBe(true)
       expect(h1.text()).toBe('Todo List Management')
     })
