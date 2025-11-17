@@ -15,12 +15,13 @@ namespace TodoBackend.Infrastructure.Repositories
         }
 
         public async Task<IEnumerable<TodoItem>> GetAllAsync(
+            string userId,
             DateTime? scheduledDateTimeFrom = null,
             DateTime? scheduledDateTimeTo = null,
             DateTime? dueDateTimeFrom = null,
             DateTime? dueDateTimeTo = null)
         {
-            var query = _context.TodoItems.AsQueryable();
+            var query = _context.TodoItems.Where(t => t.UserId == userId);
 
             if (scheduledDateTimeFrom.HasValue)
             {
@@ -45,9 +46,9 @@ namespace TodoBackend.Infrastructure.Repositories
             return await query.ToListAsync();
         }
 
-        public async Task<TodoItem?> GetByIdAsync(int id)
+        public async Task<TodoItem?> GetByIdAsync(int id, string userId)
         {
-            return await _context.TodoItems.FindAsync(id);
+            return await _context.TodoItems.FirstOrDefaultAsync(t => t.Id == id && t.UserId == userId);
         }
 
         public async Task<TodoItem> AddAsync(TodoItem todoItem)
@@ -69,9 +70,9 @@ namespace TodoBackend.Infrastructure.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> ExistsAsync(int id)
+        public async Task<bool> ExistsAsync(int id, string userId)
         {
-            return await _context.TodoItems.AnyAsync(t => t.Id == id);
+            return await _context.TodoItems.AnyAsync(t => t.Id == id && t.UserId == userId);
         }
     }
 }

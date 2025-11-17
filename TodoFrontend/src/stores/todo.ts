@@ -3,15 +3,20 @@ import { ref, computed } from 'vue'
 import type { TodoItem } from '@/types/todo'
 import { TodoApiClient } from '@/api'
 import dayjs from 'dayjs'
+import { useAuthStore } from './auth'
 
 export const useTodoStore = defineStore('todo', () => {
   const todos = ref<TodoItem[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
+  const authStore = useAuthStore()
 
   const apiClient = new TodoApiClient({
     // this trick uses the dynamic vite api url to point the client object to the correct backend url
     BASE: import.meta.env.VITE_API_BASE_URL || '',
+    TOKEN: authStore.token || undefined,
+    WITH_CREDENTIALS: true,
+    CREDENTIALS: 'include'
   })
 
   // Getters
@@ -77,14 +82,27 @@ export const useTodoStore = defineStore('todo', () => {
   }
 
   // Actions
+  function updateApiClientAuth() {
+    // Update the API client with the current authentication token
+    apiClient.request.config.TOKEN = authStore.token || undefined
+    apiClient.request.config.WITH_CREDENTIALS = true
+    apiClient.request.config.CREDENTIALS = 'include'
+  }
+
   async function fetchTodos() {
     loading.value = true
     error.value = null
     try {
+      updateApiClientAuth()
       const response = await apiClient.todoBackendApi.getApiTodoitems()
       todos.value = response
-    } catch (err) {
-      error.value = 'Failed to fetch todos'
+    } catch (err: any) {
+      if (err.status === 401) {
+        error.value = 'Authentication required. Please login again.'
+        authStore.logout()
+      } else {
+        error.value = 'Failed to fetch todos'
+      }
       console.error('Error fetching todos:', err)
     } finally {
       loading.value = false
@@ -95,10 +113,16 @@ export const useTodoStore = defineStore('todo', () => {
     loading.value = true
     error.value = null
     try {
+      updateApiClientAuth()
       const response = await apiClient.todoBackendApi.postApiTodoitems(todo)
       todos.value.push(response)
-    } catch (err) {
-      error.value = 'Failed to add todo'
+    } catch (err: any) {
+      if (err.status === 401) {
+        error.value = 'Authentication required. Please login again.'
+        authStore.logout()
+      } else {
+        error.value = 'Failed to add todo'
+      }
       console.error('Error adding todo:', err)
     } finally {
       loading.value = false
@@ -109,13 +133,19 @@ export const useTodoStore = defineStore('todo', () => {
     loading.value = true
     error.value = null
     try {
+      updateApiClientAuth()
       const response = await apiClient.todoBackendApi.putApiTodoitems(id, todo)
       const index = todos.value.findIndex(t => t.id === id)
       if (index !== -1) {
         todos.value[index] = response
       }
-    } catch (err) {
-      error.value = 'Failed to update todo'
+    } catch (err: any) {
+      if (err.status === 401) {
+        error.value = 'Authentication required. Please login again.'
+        authStore.logout()
+      } else {
+        error.value = 'Failed to update todo'
+      }
       console.error('Error updating todo:', err)
     } finally {
       loading.value = false
@@ -126,10 +156,16 @@ export const useTodoStore = defineStore('todo', () => {
     loading.value = true
     error.value = null
     try {
+      updateApiClientAuth()
       await apiClient.todoBackendApi.deleteApiTodoitems(id)
       todos.value = todos.value.filter(todo => todo.id !== id)
-    } catch (err) {
-      error.value = 'Failed to delete todo'
+    } catch (err: any) {
+      if (err.status === 401) {
+        error.value = 'Authentication required. Please login again.'
+        authStore.logout()
+      } else {
+        error.value = 'Failed to delete todo'
+      }
       console.error('Error deleting todo:', err)
     } finally {
       loading.value = false
@@ -148,5 +184,6 @@ export const useTodoStore = defineStore('todo', () => {
     addTodo,
     updateTodo,
     deleteTodo,
+    updateApiClientAuth,
   }
 })

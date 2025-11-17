@@ -16,7 +16,7 @@ namespace TodoBackend.Tests.TestHelpers
                 // Remove the existing DbContext registration
                 var descriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(DbContextOptions<TodoContext>));
-                
+
                 if (descriptor != null)
                 {
                     services.Remove(descriptor);
@@ -25,7 +25,7 @@ namespace TodoBackend.Tests.TestHelpers
                 // Remove TodoContext registration if it exists
                 var contextDescriptor = services.SingleOrDefault(
                     d => d.ServiceType == typeof(TodoContext));
-                
+
                 if (contextDescriptor != null)
                 {
                     services.Remove(contextDescriptor);

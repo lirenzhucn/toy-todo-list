@@ -4,17 +4,50 @@
     "title": "TodoBackend.API | v1",
     "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "http://localhost:5161/"
-    }
-  ],
   "paths": {
     "/health": {
       "get": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "tags": ["TodoBackend.API"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "tags": ["TodoBackend.API"],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginRequest"
+              }
+            }
+          },
+          "required": true
+        },
         "responses": {
           "200": {
             "description": "OK"
@@ -24,9 +57,7 @@
     },
     "/api/todoitems": {
       "get": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
         "parameters": [
           {
             "name": "scheduledDateTimeFrom",
@@ -68,9 +99,7 @@
         }
       },
       "post": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
         "requestBody": {
           "content": {
             "application/json": {
@@ -90,9 +119,7 @@
     },
     "/api/todoitems/{id}": {
       "get": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
         "parameters": [
           {
             "name": "id",
@@ -111,9 +138,7 @@
         }
       },
       "put": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
         "parameters": [
           {
             "name": "id",
@@ -142,9 +167,7 @@
         }
       },
       "delete": {
-        "tags": [
-          "TodoBackend.API"
-        ],
+        "tags": ["TodoBackend.API"],
         "parameters": [
           {
             "name": "id",
@@ -166,6 +189,37 @@
   },
   "components": {
     "schemas": {
+      "LoginRequest": {
+        "required": ["userName", "password"],
+        "type": "object",
+        "properties": {
+          "userName": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "RegisterRequest": {
+        "required": ["email", "userName", "password"],
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "userName": {
+            "maxLength": 50,
+            "minLength": 3,
+            "type": "string"
+          },
+          "password": {
+            "maxLength": 100,
+            "minLength": 6,
+            "type": "string"
+          }
+        }
+      },
       "TodoItem": {
         "type": "object",
         "properties": {
@@ -193,6 +247,9 @@
             "type": "string",
             "format": "date-time",
             "nullable": true
+          },
+          "userId": {
+            "type": "string"
           }
         }
       }
@@ -204,3 +261,4 @@
     }
   ]
 }
+
