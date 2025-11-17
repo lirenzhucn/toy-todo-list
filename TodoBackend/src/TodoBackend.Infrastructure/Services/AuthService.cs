@@ -19,18 +19,18 @@ namespace TodoBackend.Infrastructure.Services
             _jwtTokenService = jwtTokenService;
         }
 
-        public async Task<AuthResponse?> RegisterAsync(RegisterRequest request)
+        public async Task<AuthResult> RegisterAsync(RegisterRequest request)
         {
             var existingUser = await _userManager.FindByNameAsync(request.UserName);
             if (existingUser != null)
             {
-                return null; // Username already exists
+                return AuthResult.FailureResult("Username already exists.");
             }
 
             var existingEmail = await _userManager.FindByEmailAsync(request.Email);
             if (existingEmail != null)
             {
-                return null; // Email already exists
+                return AuthResult.FailureResult("Email already exists.");
             }
 
             var user = new ApplicationUser
@@ -45,16 +45,19 @@ namespace TodoBackend.Infrastructure.Services
             if (result.Succeeded)
             {
                 var token = _jwtTokenService.GenerateToken(user);
-                return new AuthResponse
+                var authResponse = new AuthResponse
                 {
                     Token = token,
                     Expiration = DateTime.UtcNow.AddMinutes(60), // Should match JWT expiration
                     UserName = user.UserName!,
                     Email = user.Email!
                 };
+                return AuthResult.SuccessResult(authResponse);
             }
 
-            return null;
+            // Extract specific error messages from the result
+            var errors = result.Errors.Select(e => e.Description).ToList();
+            return AuthResult.FailureResult(errors);
         }
 
         public async Task<AuthResponse?> LoginAsync(LoginRequest request)

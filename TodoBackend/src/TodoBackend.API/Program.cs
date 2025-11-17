@@ -100,9 +100,9 @@ app.MapGet("/health", () => Results.Ok("Healthy"));
 app.MapPost("/api/auth/register", async (RegisterRequest request, IAuthService authService) =>
 {
     var result = await authService.RegisterAsync(request);
-    return result != null
-        ? Results.Ok(result)
-        : Results.BadRequest(new { message = "Registration failed. Username or email may already exist." });
+    return result.Success
+        ? Results.Ok(result.Data)
+        : Results.BadRequest(new { message = "Registration failed.", errors = result.Errors });
 });
 
 app.MapPost("/api/auth/login", async (LoginRequest request, IAuthService authService) =>
