@@ -19,6 +19,20 @@ TodoFrontend/
 │   │   └── todo.ts      # Todo-related types
 │   ├── main.ts          # App entry point
 │   └── App.vue          # Root component
+├── tests/
+│   ├── App.test.ts              # Root component tests
+│   ├── setup.ts                 # Test configuration and mocks
+│   ├── components/              # Component unit tests
+│   │   ├── TodoForm.test.ts     # Todo form component tests
+│   │   └── TodoTable.test.ts    # Todo table component tests
+│   ├── views/                   # View component tests
+│   │   └── TodoList.test.ts     # Todo list page tests
+│   ├── stores/                  # Store unit tests
+│   │   ├── auth.test.ts         # Authentication store tests
+│   │   └── todo.test.ts         # Todo store tests
+│   ├── integration/             # Integration tests
+│   │   └── api.test.ts          # API integration tests
+│   └── utils/                   # Test utilities
 └── package.json
 ```
 
