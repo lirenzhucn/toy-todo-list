@@ -139,7 +139,21 @@ const handleRegister = async () => {
     router.push('/login')
   } catch (error: any) {
     console.error('Registration error:', error)
-    ElMessage.error(error.response?.data?.message || 'Registration failed. Please try again.')
+
+    // Check for specific error messages in the errors field
+    const errorData = error.body
+    if (errorData?.errors && Array.isArray(errorData.errors) && errorData.errors.length > 0) {
+      // Display each specific error message
+      errorData.errors.forEach((errorMsg: string) => {
+        ElMessage.error(errorMsg)
+      })
+    } else if (errorData?.message) {
+      // Fallback to general message if no specific errors
+      ElMessage.error(errorData.message)
+    } else {
+      // Default fallback message
+      ElMessage.error('Registration failed. Please try again.')
+    }
   } finally {
     loading.value = false
   }
