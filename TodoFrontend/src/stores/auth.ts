@@ -1,10 +1,17 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
-import type { AuthResponse } from '@/api/models/AuthResponse'
 import type { LoginRequest } from '@/api/models/LoginRequest'
 import type { RegisterRequest } from '@/api/models/RegisterRequest'
 import { TodoApiClient } from '@/api'
 import { useTodoStore } from './todo'
+
+// Define AuthResponse type locally since it's not in the auto-generated API models
+interface AuthResponse {
+  token: string;
+  userName: string;
+  email: string;
+  expiration: string;
+}
 
 export const useAuthStore = defineStore('auth', () => {
   const apiClient = new TodoApiClient({
