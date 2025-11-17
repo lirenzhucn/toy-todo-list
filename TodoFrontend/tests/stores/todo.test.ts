@@ -3,6 +3,16 @@ import { describe, it, expect, beforeEach, vi } from 'vitest'
 import { useTodoStore } from '@/stores/todo'
 import { mockTodoItems } from '../utils/mocks'
 
+// Mock the auth store
+vi.mock('@/stores/auth', () => ({
+  useAuthStore: vi.fn(() => ({
+    token: 'test-token',
+    isAuthenticated: true,
+    logout: vi.fn(),
+    updateApiClientAuth: vi.fn()
+  }))
+}))
+
 // Mock the API client module
 vi.mock('@/api/TodoApiClient', () => ({
   TodoApiClient: class MockTodoApiClient {
@@ -22,6 +32,13 @@ vi.mock('@/api/TodoApiClient', () => ({
 // Mock the API module
 vi.mock('@/api', () => ({
   TodoApiClient: class MockTodoApiClient {
+    request = {
+      config: {
+        TOKEN: undefined,
+        WITH_CREDENTIALS: false,
+        CREDENTIALS: 'include'
+      }
+    }
     todoBackendApi = {
       getApiTodoitems: vi.fn().mockResolvedValue(mockTodoItems),
       postApiTodoitems: vi.fn().mockImplementation((todo: any) =>

@@ -4,12 +4,19 @@ import type { AuthResponse } from '@/api/models/AuthResponse'
 import type { LoginRequest } from '@/api/models/LoginRequest'
 import type { RegisterRequest } from '@/api/models/RegisterRequest'
 import { TodoApiClient } from '@/api'
+import { useTodoStore } from './todo'
 
 export const useAuthStore = defineStore('auth', () => {
   const apiClient = new TodoApiClient({
     // this trick uses the dynamic vite api url to point the client object to the correct backend url
     BASE: import.meta.env.VITE_API_BASE_URL || '',
   })
+
+  function updateApiClients() {
+    // Update the todo store's API client with the current authentication state
+    const todoStore = useTodoStore()
+    todoStore.updateApiClientAuth()
+  }
   // State
   const token = ref<string | null>(localStorage.getItem('token'))
   const user = ref<{ userName: string; email: string } | null>(
@@ -43,6 +50,9 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.setItem('token', authResponse.token)
     localStorage.setItem('user', JSON.stringify(user.value))
     localStorage.setItem('expiration', authResponse.expiration)
+
+    // Update any existing API clients with the new token
+    updateApiClients()
   }
 
   function clearAuthData() {
@@ -54,6 +64,9 @@ export const useAuthStore = defineStore('auth', () => {
     localStorage.removeItem('token')
     localStorage.removeItem('user')
     localStorage.removeItem('expiration')
+
+    // Update any existing API clients to remove the token
+    updateApiClients()
   }
 
   async function login(loginRequest: LoginRequest): Promise<void> {
@@ -112,7 +125,8 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     initializeAuth,
     setAuthData,
-    clearAuthData
+    clearAuthData,
+    updateApiClients
   }
 })
 
