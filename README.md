@@ -1,38 +1,52 @@
-# Ezra Take-Home Test (Todo Task Management)
+# Todo Task Management
 
-Full-stack Todo application with Vue.js frontend and .NET Core backend,
-containerized with Docker for easy deployment.
+Full-stack Todo application with Vue.js frontend and .NET 9 backend,
+containerized with Docker for easy deployment. Features user authentication
+task management with scheduling capabilities.
+
+## Important AI Usage Note
+
+Much of the code in this repo is written with AI coding assistance tools.
+The primary tools used are Kimi CLI and Claude Code.
+
+The tools were used under interactive supervision and the code generated was
+carefully reviewed by the author.
+
+.NET is an unfamiliar stack for me, who has primarily worked as a Python
+backend developer in web development context. Vue.js has also not been within my
+job's purview recently. The use of AI tools allowed me to produce a
+feature-rich application with high-quality code, within a reasonable amount of
+time.
 
 ## Quick Start
-
-### Using Docker (Recommended)
 
 ```bash
 # Build and run the entire application
 docker-compose up --build
 
 # Access the application
-open http://localhost:8080  # or manually navigate to this address on your browser
+open http://localhost:8080  # Application will be available at this address
 ```
 
-### Manual Setup
-
-See individual README files in `TodoFrontend/` and `TodoBackend/` directories.
+To try without docker, see the [Design Choices/Development](#development).
 
 ## Design Choices
 
 ### Features
 
+- User registration and authentication
 - Create, read, update, delete todo items
-- Schedule todos with due dates
+- Schedule todos with scheduled and due dates
 - Mark todos as complete/incomplete
+- Filter todos by status (all, incomplete, complete, overdue)
 - Docker containerization
 - Health checks and monitoring
+- Clean architecture with separation of concerns
 
 ### Architecture
 
 - **Frontend**: Vue.js 3 with TypeScript, Element Plus UI
-- **Backend**: .NET 9 Web API with Entity Framework Core
+- **Backend**: .NET 9 Web API with Entity Framework Core and Clean Architecture
 - **Database**: SQLite
 - **Containerization**: Docker with multi-stage builds
 
@@ -55,7 +69,10 @@ API without needing CORS enabled.
 
 ```bash
 cd TodoBackend
-dotnet run --project src/TodoBackend.API/TodoBackend.API.csproj
+dotnet build
+cd src/TodoBackend.API
+dotnet ef database update  # First time setup
+dotnet run
 ```
 
 **Frontend Development**
@@ -63,6 +80,7 @@ dotnet run --project src/TodoBackend.API/TodoBackend.API.csproj
 ```bash
 cd TodoFrontend
 npm install
+npm run generate-api  # Generate API client from OpenAPI spec
 npm run dev
 ```
 
@@ -71,12 +89,16 @@ npm run dev
 The application is production-ready with:
 
 - Multi-stage Docker builds for optimized images
-- Non-root user execution for security
+- Non-root user execution in container for security
 - Health checks and monitoring
 - Volume persistence for database
 - Single container deployment
 
 ## Future Work
 
-- User management and auth
-- Separate deployment for frontend and backend
+- Separate deployment for frontend and backend (for separate scalability)
+- Cookie auth instead of JWT
+- Additional authentication features (password reset, email verification, OAuth support, etc.)
+- Real-time notifications
+- Advanced filtering and search capabilities
+- Integration with other tools like calendar apps
